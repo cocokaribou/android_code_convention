@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+	div {
+		vertical-align:top;
+	}
+	.row {
+		margin-bottom: 5em;
+	}
+	
+    .left {
+    	float: left;
+    	width: 200px;
+    	color: #343a3a;
+
+    }
+    .right {
+    	margin-left: 250px;
+    }
+
+    p.dont {
+    	color: #900000;
+    	font-weight: bold;
+    	padding: 3px;
+    	margin-bottom: 0px;
+    	background-color: #ffeeee;
+    }
+    p.do {
+		color: #008000;
+    	font-weight: bold;
+    	padding: 3px;
+    	margin-bottom: 0px;
+    	background-color: #eeffee;
+    }
+    .code-block{
+    	font-family: monospace;
+    	background-color: #fafafa;
+    	padding: 20px;
+    	white-space: nowrap;
+    	overflow-x:auto;
+    }
+    .code-inline {
+    	font-family: monospace;
+    	background-color: #efefef;
+		padding : 3px 6px;
+    	border-radius: 3px;
+		margin : 2px 0px;
+    	font-weight: bold;
+    }
+    .label {
+    	color: blue;
+    }
+    .this {
+    	color: #af5f00;
+    }
+    .comment {
+    	color: #ababab;
+    }
+    .nullsafe {
+    	color: #BF9000;
+    }
+    .literal {
+    	color: #2200aa;
+    }
+    .log {
+    	color: #2c8800;
+    }
+    .div-comment{
+    	color: #555555;
+    	margin-top: 10px;
+    	font-size: 80%;
+    	line-height: 1.5em;
+    }
+    .indent{
+    	background-color: #cdcdcd;
+    }
+	.not-used{
+    	text-decoration-color: #ddcc22;
+    	text-decortaion-thickness: 2px;
+    }
+    
+    
+</style>
+</head>
+
+<body>
+<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+<!--title-->
+<h2>
+<p align="center">
+Code Convention
+</p>
+</h2>
+
+<!--1)-->
+<div class="row">
+<div class="left">코드블럭 시작하는 중괄호 앞은 한 칸 띄우기</div>
+<div class="right">
+<p class="dont">Don't</p>
+	<div class="code-block">
+	fun networkAvailable(){<br>
+	&emsp;&emsp;viewModel.searchIntroRepo(OS_TYPE)<br>
+	}
+	</div>
+
+<p class="do">Do</p>
+	<div class="code-block">
+	fun networkAvailable()<span class="indent"> </span>{<br>
+	&emsp;&emsp;viewModel.searchIntroRepo(OS_TYPE)<br>
+	}
+	</div>
+</div>
+</div>
+
+<!--2)-->
+<div class="row">
+<div class="left">사용하는 람다식 인자는 이름 정하기<br>사용안하면 <span class="code-inline">_</span> 사용하기</div>
+<div class="right">
+<p class="dont">Don't</p>
+	<div class="code-block">
+	data.stoInfo?.<span class="nullsafe">let</span> { <span class="comment">it: StoreDetailData.StoreInfo</span><br>
+	&emsp;&emsp;list.add(MultiViewItem(R.layout.vh_store_detail, it))<br>
+	}<br>
+	</div><br>
+	<div class="code-block">
+	TabLayoutMediator(tlIndicator, viewpager) { <u class="not-used">tab</u>, <u class="not-used">pageCnt</u> -><br>
+	}.attach()<br>
+	</div>
+
+<p class="do">Do</p>
+	<div class="code-block">
+	data.stoInfo?.<span class="nullsafe">let</span> { <span class="indent">storeInfo</span> -><br>
+	&emsp;&emsp;list.add(MultiViewItem(R.layout.vh_store_detail, storeInfo))<br>
+	}<br>
+	</div><br>
+	<div class="code-block">
+	TabLayoutMediator(tlIndicator, viewpager) { _, _ -><br>
+	}.attach()<br>
+	</div>
+</div>
+</div>
+
+
+<!--3)-->
+<div class="row">
+<div class="left"><span class="code-inline">this</span>로 바로 참조가능할 때 @Label 붙이지 않기</div>
+<div class="right">
+<p class="dont">Don't</p>
+	<div class="code-block">
+	<span class="comment">// MainActivity</span><br>
+	viewModel.repoIntroResult.observe(<span class="this">this</span><span class="label">@MainActivity</span>) { result -><br>
+	&emsp;&emsp;...<br>
+	}<br>
+	</div>
+
+<p class="do">Do</p>
+	<div class="code-block">
+	<span class="comment">// MainActivity</span><br>
+	viewModel.repoIntroResult.observe(<span class="this">this</span>) { result -><br>
+	&emsp;&emsp;...<br>
+	}<br>
+	</div><br>
+
+<div class="code-block">
+	<span class="comment">// LoginFragment</span><br>
+	private fun removeLoginFragment() {<br>
+	&emsp;&emsp;(activity as MainActivity).supportFragmentManager.commit { <span class="comment"> this:FragmentTransaction<br></span>
+	&emsp;&emsp;&emsp;setReorderingAllowed(true)<br>
+	&emsp;&emsp;&emsp;remove(<span class="this">this</span><span class="label">@LoginFragment</span>)<br>
+	&emsp;&emsp;}<br>
+	}
+	</div>
+
+</div>
+</div>
+
+<!--4)-->
+<div class="row">
+<div class="left">데이터를 ? nullable로 정의하고 null-safe로 처리하기<br>null 체크 없이 <span class="code-inline">!!</span> 연산자 사용금지</div>
+<div class="right">
+<p class="dont">Don't</p>
+	<div class="code-block">
+	val mbrName = result.data.mbrName!!
+	</div>
+	
+<p class="do">Do</p>
+	<div class="code-block">
+	val mbrName = result.data.mbrName?.<span class="nullsafe">let</span> { memberName -><br>
+	&emsp;&emsp;memberName<br>
+	} ?: <span class="nullsafe">run</span> { <span class="comment">this</span><br>
+	&emsp;&emsp;<span class="literal">""</span><br>
+	}
+	</div>
+	<div class="div-comment">키 값이 없는 경우, 키는 있는데 값이 null 일 경우 모두 방지
+	<br>문자열의 경우, <span class="code-inline">isEmpty()</span>로 비어있을 때 처리 따로 필요</div>
+</div>
+</div>
+
+
+<!--5)-->
+<div class="row">
+<div class="left">UI에서 쓰는 문자열은 <span class="code-inline">strings.xml</span>에 정의하기</div>
+<div class="right">
+<p class="dont">Don't</p>
+	<div class="code-block">
+	val loginState = <br>
+	&emsp;&emsp;if(<span class="this">isLogin</span>) {<br>
+	&emsp;&emsp;&emsp;&emsp;String.format(<span class="literal">"%s님 반갑습니다!"</span>, memberName)<br>
+	&emsp;&emsp;} else<br>
+	&emsp;&emsp;&emsp;&emsp;<span class="literal">"로그인이 필요합니다."</span><br>
+	&emsp;&emsp;}<br>
+	}
+	</div>
+
+<p class="do">Do</p>
+<div class="code-block">
+	val loginState = <br>
+	&emsp;&emsp;if(<span class="this">isLogin</span>) {<br>
+	&emsp;&emsp;&emsp;&emsp;String.format(<span class="indent">getString(R.string.state_login)</span>, memberName)<br>
+	&emsp;&emsp;} else<br>
+	&emsp;&emsp;&emsp;&emsp;<span class="indent">getString(R.string.state_logout)</span><br>
+	&emsp;&emsp;}<br>
+	}
+	</div>
+
+</div>
+</div>
+
+
+<!--6)-->
+<div class="row">
+<div class="left">코드에서 쓰는 상수는 object의 <span class="code-inline">const val</span> 필드에 정의하기</div>
+<div class="right">
+<p class="dont">Don't</p>
+	<div class="code-block">
+	<span class="this">class</span> IntroFragment : Fragment() {<br><br>
+	&emsp;&emsp;<span class="this">companion object</span> {<br>
+	&emsp;&emsp;&emsp;&emsp;val APPTP_DEFAULT = <span class="literal">"1"</span><br>
+	&emsp;&emsp;&emsp;&emsp;val APPTP_UPDATE = <span class="literal">"2"</span><br>
+	&emsp;&emsp;&emsp;&emsp;val APPTP_FORCE_UPDATE = <span class="literal">"3"</span><br>
+	&emsp;&emsp;&emsp;&emsp;val APPTP_SYSCHK = <span class="literal">"9"</span><br>
+	&emsp;&emsp;}<br>
+	}
+	</div>
+
+<p class="do">Do</p>
+	<div class="code-block">
+	<span class="this">object</span> CommonConst {<br><br>
+	&emsp;&emsp;const val APPTP_DEFAULT = <span class="literal">"1"</span> <span class="comment">// 분기문</span><br>
+	&emsp;&emsp;const val APPTP_UPDATE = <span class="literal">"2"</span><br>
+	&emsp;&emsp;const val APPTP_FORCE_UPDATE = <span class="literal">"3"</span><br>
+	&emsp;&emsp;const val APPTP_SYSCHK = <span class="literal">"9"</span><br><br>
+	&emsp;&emsp;const val BUNDLE_KEY_URL = <span class="literal">"url"</span> <span class="comment">// 키값</span><br>
+	&emsp;&emsp;const val OS_TYPE = 1 <span class="comment">// api 인자</span><br><br>
+	}
+	</div>
+
+
+</div>
+</div>
+<br>
+
+
+<!--7)-->
+<div class="row">
+<div class="left">함수명을 기능을 알 수 있게 직관적으로 짓기</div>
+<div class="right">
+<p class="dont">Don't</p>
+	<div class="code-block">
+	private fun <span class="this">generationItemData</span>(data: StoreDetailData): ArrayList<MultiViewItem> {<br>
+	&emsp;&emsp;... <br>
+	&emsp;&emsp;return list<br>
+	}
+	</div><br>
+	<div class="code-block">
+	when (result) {<br>
+	&emsp;&emsp;is StoreList.Success -> adapter.submitList(<span class="this">generationItemData</span>(result.data))<br>
+	&emsp;&emsp;...<br>
+	}<br>
+	</div>
+
+<p class="do">Do</p>
+
+<div class="code-block">
+	private fun <span class="this">setItemUi</span>(data: StoreDetailData): ArrayList<MultiViewItem> {<br>
+	&emsp;&emsp;... <br>
+	&emsp;&emsp;return list<br>
+	}
+	</div><br>
+	<div class="code-block">
+	when (result) {<br>
+	&emsp;&emsp;is StoreList.Success -> adapter.submitList(<span class="this">setItemUi</span>(result.data))<br>
+	&emsp;&emsp;...<br>
+	}<br>
+	</div>
+
+</div>
+</div>
+<br>
+
+<!--8)-->
+<div class="row">
+<div class="left">디버그용 Log는 레벨 i 이하로 맞추기<br>(Info, Debug, Verbose)</div>
+<div class="right">
+<p class="dont">Don't</p>
+	<div class="code-block">
+	if (result) {<br>
+	&emsp;&emsp;&emsp;&emsp;LogHelper.e(<span class="log">"sign in success!"</span>) ...<br>
+	&emsp;&emsp;} else {<br>
+	&emsp;&emsp;&emsp;&emsp;LogHelper.e(<span class="log">"sign in error!"</span>) ... <br>
+	&emsp;&emsp;}<br>
+	}<br>
+	</div>
+
+<p class="do">Do</p>
+	<div class="code-block">
+	if (result) {<br>
+	&emsp;&emsp;&emsp;&emsp;LogHelper.<span class="indent">v</span>(<span class="log">"sign in success!"</span>) ...<br>
+	&emsp;&emsp;} else {<br>
+	&emsp;&emsp;&emsp;&emsp;LogHelper.<span class="indent">v</span>(<span class="log">"sign in error!"</span>) ... <br>
+	&emsp;&emsp;}<br>
+	}<br>
+	</div>
+
+	<div class="div-comment">알려야하는 사안은 Info, 디버그 구문은 Debug, 개발자 개인의 관심사는 Verbose. <a href="http://developer.gaeasoft.co.kr/development-guide/android-guide/android-coding-style-guide/">참고</a><br>
+	지나친 로그 구문은 앱의 성능에 영향을 준다. <a href="https://developer.android.com/studio/publish/preparing#publishing-configure">참고</a></div>
+	</div>
+
+</div>
+</div>
+<br>
+
+
+<!--9)-->
+<div class="row">
+<div class="left">클래스 설명은 javadoc 주석, 함수 설명은 javadoc 주석 한줄로 맞추기</div>
+<div class="right">
+<p class="dont">Don't</p>
+	<div class="code-block">
+	</div>
+
+<p class="do">Do</p>
+	<div class="code-block">
+	</div>
+
+
+</div>
+</div>
+<br>
+
+<!--10)-->
+<div class="row">
+<div class="left">context를 클래스 필드에 두지 않기</div>
+<div class="right">
+<p class="dont">Don't</p>
+	<div class="code-block">
+	</div>
+
+<p class="do">Do</p>
+	<div class="code-block">
+	</div>
+
+
+</div>
+</div>
+<br>
+
+</body>
+</html>
